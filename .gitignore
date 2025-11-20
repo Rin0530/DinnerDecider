@@ -1,0 +1,4 @@
+frontend/.next
+backend/bin
+backend/config.yaml
+ollama/.ollama

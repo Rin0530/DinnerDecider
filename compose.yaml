@@ -1,0 +1,48 @@
+services:
+  ollama:
+    image: ollama/ollama:rocm
+    tty: true
+    container_name: ollama
+    working_dir: /app
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            capabilities: [gpu]
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=192.168.*
+    networks:
+      - default
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama/.ollama:/root/.ollama
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    container_name: backend
+    tty: true
+    ports:
+      - "8080:8080"
+    networks:
+      - default
+    environment:
+      - OLLAMA_API_URL=http://ollama:11434
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    container_name: frontend
+    tty: true
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://backend:8080
+    networks:
+      - default
+networks:
+  default:
+    driver: bridge

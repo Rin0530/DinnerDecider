@@ -1,0 +1,246 @@
+basePath: /api
+definitions:
+  domain.Ingredient:
+    properties:
+      created_at:
+        type: string
+      expiration_date:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      quantity:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  domain.RecipeResponse:
+    properties:
+      suggestions:
+        items:
+          $ref: '#/definitions/domain.RecipeSuggestion'
+        type: array
+    type: object
+  domain.RecipeSuggestion:
+    properties:
+      missing_items:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      steps:
+        items:
+          type: string
+        type: array
+    type: object
+  usecase.CreateIngredientRequest:
+    properties:
+      expiration_date:
+        description: YYYY-MM-DD format
+        type: string
+      name:
+        type: string
+      quantity:
+        type: string
+    required:
+    - name
+    type: object
+  usecase.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  usecase.UpdateIngredientRequest:
+    properties:
+      expiration_date:
+        description: YYYY-MM-DD format
+        type: string
+      name:
+        type: string
+      quantity:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is an API server for the Dinner Decider application.
+  title: Dinner Decider API
+  version: "1.0"
+paths:
+  /ingredients:
+    get:
+      consumes:
+      - application/json
+      description: 冷蔵庫にあるすべての食材のリストを取得します。
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 食材のリスト
+          schema:
+            items:
+              $ref: '#/definitions/domain.Ingredient'
+            type: array
+        "500":
+          description: サーバー内部エラー
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+      summary: すべての食材を取得
+      tags:
+      - ingredients
+    post:
+      consumes:
+      - application/json
+      description: 新しい食材を冷蔵庫に追加します。
+      parameters:
+      - description: 作成する食材の情報
+        in: body
+        name: ingredient
+        required: true
+        schema:
+          $ref: '#/definitions/usecase.CreateIngredientRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 作成された食材
+          schema:
+            $ref: '#/definitions/domain.Ingredient'
+        "400":
+          description: リクエストが不正です
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+        "500":
+          description: サーバー内部エラー
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+      summary: 食材を作成
+      tags:
+      - ingredients
+  /ingredients/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 指定されたIDの食材を削除します。
+      parameters:
+      - description: 食材ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: 削除成功
+        "400":
+          description: リクエストが不正です
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+        "500":
+          description: サーバー内部エラー
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+      summary: 食材を削除
+      tags:
+      - ingredients
+    get:
+      consumes:
+      - application/json
+      description: 指定されたIDの食材情報を取得します。
+      parameters:
+      - description: 食材ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 食材の情報
+          schema:
+            $ref: '#/definitions/domain.Ingredient'
+        "400":
+          description: リクエストが不正です
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+        "404":
+          description: 食材が見つかりません
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+        "500":
+          description: サーバー内部エラー
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+      summary: IDで食材を取得
+      tags:
+      - ingredients
+    put:
+      consumes:
+      - application/json
+      description: 指定されたIDの食材情報を更新します。
+      parameters:
+      - description: 食材ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 更新する食材の情報
+        in: body
+        name: ingredient
+        required: true
+        schema:
+          $ref: '#/definitions/usecase.UpdateIngredientRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新された食材
+          schema:
+            $ref: '#/definitions/domain.Ingredient'
+        "400":
+          description: リクエストが不正です
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+        "404":
+          description: 食材が見つかりません
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+        "500":
+          description: サーバー内部エラー
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+      summary: 食材を更新
+      tags:
+      - ingredients
+  /recipes/suggestion:
+    post:
+      consumes:
+      - application/json
+      description: 登録されている食材を基にAIが献立を提案します
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 献立提案のリスト
+          schema:
+            $ref: '#/definitions/domain.RecipeResponse'
+        "500":
+          description: 内部サーバーエラー
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+        "503":
+          description: サービス利用不可（AI APIが利用できない場合）
+          schema:
+            $ref: '#/definitions/usecase.ErrorResponse'
+      summary: 献立提案を取得
+      tags:
+      - recipes
+schemes:
+- http
+swagger: "2.0"

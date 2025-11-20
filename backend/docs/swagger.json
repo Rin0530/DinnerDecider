@@ -1,0 +1,373 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "This is an API server for the Dinner Decider application.",
+        "title": "Dinner Decider API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api",
+    "paths": {
+        "/ingredients": {
+            "get": {
+                "description": "冷蔵庫にあるすべての食材のリストを取得します。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ingredients"
+                ],
+                "summary": "すべての食材を取得",
+                "responses": {
+                    "200": {
+                        "description": "食材のリスト",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Ingredient"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "サーバー内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "新しい食材を冷蔵庫に追加します。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ingredients"
+                ],
+                "summary": "食材を作成",
+                "parameters": [
+                    {
+                        "description": "作成する食材の情報",
+                        "name": "ingredient",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/usecase.CreateIngredientRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "作成された食材",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Ingredient"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストが不正です",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "サーバー内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ingredients/{id}": {
+            "get": {
+                "description": "指定されたIDの食材情報を取得します。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ingredients"
+                ],
+                "summary": "IDで食材を取得",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "食材ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "食材の情報",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Ingredient"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストが不正です",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "食材が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "サーバー内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "指定されたIDの食材情報を更新します。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ingredients"
+                ],
+                "summary": "食材を更新",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "食材ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "更新する食材の情報",
+                        "name": "ingredient",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/usecase.UpdateIngredientRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "更新された食材",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Ingredient"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストが不正です",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "食材が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "サーバー内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "指定されたIDの食材を削除します。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ingredients"
+                ],
+                "summary": "食材を削除",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "食材ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "削除成功"
+                    },
+                    "400": {
+                        "description": "リクエストが不正です",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "サーバー内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/recipes/suggestion": {
+            "post": {
+                "description": "登録されている食材を基にAIが献立を提案します",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "recipes"
+                ],
+                "summary": "献立提案を取得",
+                "responses": {
+                    "200": {
+                        "description": "献立提案のリスト",
+                        "schema": {
+                            "$ref": "#/definitions/domain.RecipeResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部サーバーエラー",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "サービス利用不可（AI APIが利用できない場合）",
+                        "schema": {
+                            "$ref": "#/definitions/usecase.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "domain.Ingredient": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "expiration_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.RecipeResponse": {
+            "type": "object",
+            "properties": {
+                "suggestions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.RecipeSuggestion"
+                    }
+                }
+            }
+        },
+        "domain.RecipeSuggestion": {
+            "type": "object",
+            "properties": {
+                "missing_items": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "usecase.CreateIngredientRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "expiration_date": {
+                    "description": "YYYY-MM-DD format",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "string"
+                }
+            }
+        },
+        "usecase.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "usecase.UpdateIngredientRequest": {
+            "type": "object",
+            "properties": {
+                "expiration_date": {
+                    "description": "YYYY-MM-DD format",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
